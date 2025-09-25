@@ -1,7 +1,5 @@
 <?php
-// Fichier: /api/user_login.php
-// Version mise à jour pour inclure le statut "Annimateur"
-
+// Fichier: /api/user_login.php (Corrigé)
 session_start();
 header('Content-Type: application/json');
 require_once 'config.php';
@@ -52,14 +50,13 @@ try {
             'nom' => $userRecord['fields']['nom'] ?? '',
             'prenom' => $userRecord['fields']['prenom'] ?? '',
             'mail' => $userRecord['fields']['mail'] ?? '',
+            'tel' => $userRecord['fields']['numero de tel'] ?? '', // CORRECTION : Ajout du téléphone
             'photo_url' => $userRecord['fields']['PDP'][0]['url'] ?? null,
             'is_directeur' => $userRecord['fields']['Directeur'] ?? false,
             'demande_en_cours' => $userRecord['fields']['Demande en cours...'] ?? false,
             'is_admin' => $userRecord['fields']['Admin'] ?? false,
             'is_refused' => $userRecord['fields']['Refusé'] ?? false,
             'favorites' => $userRecord['fields']['Favories'] ?? [],
-            // --- AJOUT IMPORTANT ---
-            // On récupère le statut "Annimateur" depuis Airtable
             'is_animateur' => $userRecord['fields']['Annimateur'] ?? false
         ];
         echo json_encode(['success' => true]);
