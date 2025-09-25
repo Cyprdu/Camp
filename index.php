@@ -2,6 +2,7 @@
 require_once 'partials/header.php'; 
 
 $is_logged_in = isset($_SESSION['user']);
+$is_animateur = $is_logged_in && ($_SESSION['user']['is_animateur'] ?? false);
 $user_favorites = $_SESSION['user']['favorites'] ?? [];
 
 // Liste des départements français pour le menu déroulant
@@ -29,7 +30,7 @@ $departments = [
 ];
 ?>
 
-<!-- Barre de filtre -->
+<?php if (!$is_animateur): ?>
 <div id="filter-bar" class="hidden sticky top-[64px] z-30 bg-white/95 backdrop-blur-sm shadow-md transition-all duration-300">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
         <form id="advanced-search-form" class="py-4">
@@ -44,10 +45,10 @@ $departments = [
                 
                 <?php if ($is_logged_in): ?>
                     <select id="filter-child" name="age" class="p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-500">
-                        <option value="">Tous mes enfants</option>
+                        <option value="">Pour quel enfant ?</option>
                     </select>
                 <?php else: ?>
-                    <input type="number" id="filter-age" name="age" placeholder="Âge de l'enfant" class="p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    <input type="number" id="filter-age" name="age" placeholder="Âge de l'enfant" class="p-3 border border-gray-300 rounded-lg">
                 <?php endif; ?>
 
                 <button type="submit" class="w-full bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors">Rechercher</button>
@@ -55,6 +56,7 @@ $departments = [
         </form>
     </div>
 </div>
+<?php endif; ?>
 
 <main class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
     
@@ -64,7 +66,7 @@ $departments = [
                 Bonjour <span class="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent"><?php echo htmlspecialchars($_SESSION['user']['prenom']); ?></span>
             </h1>
             <p class="mt-4 max-w-2xl mx-auto text-lg text-gray-500">
-                Prêt à trouver une nouvelle aventure ?
+                <?php echo $is_animateur ? "Prêt à trouver votre prochaine mission d'animation ?" : "Prêt à trouver une nouvelle aventure pour vos enfants ?"; ?>
             </p>
         <?php else: ?>
             <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">
@@ -76,24 +78,24 @@ $departments = [
         <?php endif; ?>
     </section>
 
-    <!-- Barre de recherche rapide par nom -->
     <section class="mb-8">
         <div class="relative">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" /></svg>
+                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" /></svg>
             </div>
             <input type="text" id="name-search-input" placeholder="Rechercher un camp par nom..." class="block w-full rounded-lg border-gray-300 p-3 pl-10 text-base shadow-sm focus:border-blue-500 focus:ring-blue-500">
         </div>
     </section>
 
-    <!-- Liste des camps -->
     <section class="mt-8">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold">Tous les camps disponibles</h2>
+            <h2 class="text-2xl font-bold"><?php echo $is_animateur ? "Camps qui recrutent" : "Tous les camps disponibles"; ?></h2>
+            <?php if (!$is_animateur): ?>
             <button id="toggle-filters-button" class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-medium text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100 transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.59L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z" clip-rule="evenodd" /></svg>
                 <span>Filtres avancés</span>
             </button>
+            <?php endif; ?>
         </div>
         
         <div id="loader" class="flex justify-center items-center h-64"><div class="loader"></div></div>
@@ -104,106 +106,118 @@ $departments = [
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    
-    const toggleFiltersButton = document.getElementById('toggle-filters-button');
-    const filterBar = document.getElementById('filter-bar');
-    const searchForm = document.getElementById('advanced-search-form');
+    const isAnimator = <?php echo json_encode($is_animateur); ?>;
+    const isLoggedIn = <?php echo json_encode($is_logged_in); ?>;
     const campsListContainer = document.getElementById('camps-list');
     const loader = document.getElementById('loader');
     const nameSearchInput = document.getElementById('name-search-input');
-    const childSelect = document.getElementById('filter-child');
     let userFavorites = <?php echo json_encode($user_favorites); ?>;
 
-    async function loadChildren() {
-        if (!childSelect) return;
-        try {
-            const response = await fetch('api/get_children.php');
-            if (!response.ok) return;
-            const children = await response.json();
+    const toggleFiltersButton = document.getElementById('toggle-filters-button');
+    const filterBar = document.getElementById('filter-bar');
+    const searchForm = document.getElementById('advanced-search-form');
+    const childSelect = document.getElementById('filter-child');
 
-            if (children.length > 0) {
-                children.forEach(child => {
-                    const option = document.createElement('option');
-                    option.value = child.age;
-                    option.textContent = `${child.prenom} (${child.age} ans)`;
-                    childSelect.appendChild(option);
-                });
-            } else {
-                childSelect.innerHTML = '<option value="">Aucun enfant enregistré</option>';
-                childSelect.disabled = true;
-            }
-        } catch (error) {
-            console.error("Erreur lors du chargement des enfants:", error);
+    if (!isAnimator) {
+        async function loadChildren() {
+            if (!childSelect) return;
+            try {
+                const response = await fetch('api/get_children.php');
+                if (!response.ok) return;
+                const children = await response.json();
+                if (children.length > 0) {
+                    children.forEach(child => {
+                        const option = document.createElement('option');
+                        option.value = child.age;
+                        option.textContent = `${child.prenom} (${child.age} ans)`;
+                        childSelect.appendChild(option);
+                    });
+                } else {
+                    childSelect.innerHTML = '<option value="">Aucun enfant enregistré</option>';
+                    childSelect.disabled = true;
+                }
+            } catch (error) { console.error("Erreur chargement enfants:", error); }
+        }
+        loadChildren();
+        if(toggleFiltersButton) toggleFiltersButton.addEventListener('click', () => filterBar.classList.toggle('hidden'));
+        if(searchForm) {
+            searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const params = Object.fromEntries(formData.entries());
+                params.name = nameSearchInput.value.trim();
+                fetchAndDisplayCamps(params);
+            });
         }
     }
 
-    function debounce(func, timeout = 300){
+    const debounce = (func, timeout = 300) => {
         let timer;
         return (...args) => {
             clearTimeout(timer);
             timer = setTimeout(() => { func.apply(this, args); }, timeout);
         };
-    }
+    };
 
     async function fetchAndDisplayCamps(params = {}) {
         loader.style.display = 'flex';
         campsListContainer.innerHTML = ''; 
-
+        const apiUrl = isAnimator ? 'api/get_eligible_camps_for_animator.php' : 'api/get_camps.php';
         const query = new URLSearchParams(params).toString();
-        const apiUrl = `api/get_camps.php?${query}`;
-
+        
         try {
-            const response = await fetch(apiUrl);
+            const response = await fetch(`${apiUrl}?${query}`);
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Erreur réseau');
+                const errorText = await response.text();
+                console.error("Server response:", errorText);
+                throw new Error('Erreur réseau ou erreur PHP. Consultez la console.');
             }
-            let camps = await response.json();
-            
+            const camps = await response.json();
             loader.style.display = 'none';
-
             if (camps.error || camps.length === 0) {
-                campsListContainer.innerHTML = `<p class="text-gray-500 col-span-full text-center">Aucun camp ne correspond à votre recherche.</p>`;
+                const message = isAnimator ? "Aucun camp ne correspond à votre profil." : "Aucun camp ne correspond à votre recherche.";
+                campsListContainer.innerHTML = `<p class="text-gray-500 col-span-full text-center py-10">${message}</p>`;
                 return;
             }
             renderCamps(camps);
-
         } catch (error) {
-            console.error("Erreur lors de la récupération des camps:", error);
             loader.style.display = 'none';
-            campsListContainer.innerHTML = `<p class="text-red-500 col-span-full text-center">${error.message}</p>`;
+            campsListContainer.innerHTML = `<p class="text-red-500 col-span-full text-center py-10">${error.message}</p>`;
         }
     }
     
     function renderCamps(camps) {
         let newContent = '';
         camps.forEach(camp => {
-            const isFavorited = userFavorites.includes(camp.id);
+            const isFavorited = !isAnimator && userFavorites.includes(camp.id);
+            const detailPage = isAnimator ? 'info-camp-animateur.php' : 'camp_details.php';
+            
+            const priceDisplay = !isAnimator ? `<p class="text-blue-600 font-bold text-lg">${camp.prix}€</p>` : '';
+            
             newContent += `
                 <div class="bg-white rounded-lg shadow-md overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 group">
-                    <div class="relative">
-                        <img src="${camp.image_url}" alt="Image pour ${camp.nom}" class="w-full h-48 object-cover cursor-pointer" onclick="window.location.href='camp_details.php?id=${camp.id}'" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e2e8f0/cbd5e0?text=Image+invalide';">
-                        <?php if ($is_logged_in): ?>
+                    <div class="relative cursor-pointer" onclick="window.location.href='${detailPage}?id=${camp.id}'">
+                        <img src="${camp.image_url}" alt="Image pour ${camp.nom}" class="w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/e2e8f0/cbd5e0?text=Image+invalide';">
+                        ${!isAnimator && isLoggedIn ? `
                         <button class="favorite-button absolute top-3 right-3 bg-white/70 backdrop-blur-sm p-2 rounded-full transition-all hover:scale-110" data-camp-id="${camp.id}" title="Ajouter aux favoris">
                             <svg class="w-5 h-5 ${isFavorited ? 'text-red-500 fill-current' : 'text-gray-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 21l-7.682-7.682a4.5 4.5 0 010-6.364z"></path>
                             </svg>
-                        </button>
-                        <?php endif; ?>
+                        </button>` : ''}
                     </div>
-                    <div class="p-4 cursor-pointer" onclick="window.location.href='camp_details.php?id=${camp.id}'">
+                    <div class="p-4 cursor-pointer" onclick="window.location.href='${detailPage}?id=${camp.id}'">
                          <h3 class="font-bold text-lg mb-2 truncate">${camp.nom}</h3>
                          <p class="text-gray-600 text-sm mb-1">📍 ${camp.ville}</p>
                          <p class="text-gray-600 text-sm mb-3">🎂 ${camp.age_min} - ${camp.age_max} ans</p>
                          <div class="flex justify-between items-center">
-                             <p class="text-blue-600 font-bold text-lg">${camp.prix}€</p>
-                             <span class="text-xs font-semibold text-gray-500">${new Date(camp.date_debut).toLocaleDateString('fr-FR')}</span>
+                             ${priceDisplay}
+                             <span class="text-xs font-semibold text-gray-500 ml-auto">${new Date(camp.date_debut).toLocaleDateString('fr-FR')}</span>
                          </div>
                     </div>
                 </div>`;
         });
         campsListContainer.innerHTML = newContent;
-        addFavoriteListeners();
+        if (!isAnimator) addFavoriteListeners();
     }
 
     function addFavoriteListeners() {
@@ -213,6 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function toggleFavorite(event) {
+        event.stopPropagation();
         const button = event.currentTarget;
         const campId = button.dataset.campId;
         const svg = button.querySelector('svg');
@@ -224,44 +239,25 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             const result = await response.json();
             if (result.success) {
-                const index = userFavorites.indexOf(campId);
                 if (result.isFavorited) {
-                    if (index === -1) userFavorites.push(campId);
+                    userFavorites.push(campId);
                     svg.classList.add('text-red-500', 'fill-current');
-                    svg.classList.remove('text-gray-600');
                 } else {
-                    if (index > -1) userFavorites.splice(index, 1);
+                    userFavorites = userFavorites.filter(id => id !== campId);
                     svg.classList.remove('text-red-500', 'fill-current');
-                    svg.classList.add('text-gray-600');
                 }
             }
         } catch (error) {
-            console.error('Erreur lors de la mise à jour des favoris:', error);
+            console.error('Erreur favoris:', error);
         }
     }
+    
+    const debouncedFetch = debounce((e) => {
+        fetchAndDisplayCamps({ name: e.target.value });
+    }, 300);
 
-    if (searchForm) {
-        searchForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const params = Object.fromEntries(formData.entries());
-            const nameValue = nameSearchInput.value.trim();
-            if(nameValue) params.name = nameValue;
-            
-            fetchAndDisplayCamps(params);
-        });
-    }
-
-    nameSearchInput.addEventListener('input', debounce(() => {
-        fetchAndDisplayCamps({ name: nameSearchInput.value });
-    }));
-
-    toggleFiltersButton.addEventListener('click', function() {
-        filterBar.classList.toggle('hidden');
-    });
-
-    loadChildren();
-    fetchAndDisplayCamps();
+    nameSearchInput.addEventListener('input', debouncedFetch);
+    fetchAndDisplayCamps({ name: nameSearchInput.value });
 });
 </script>
 </body>
