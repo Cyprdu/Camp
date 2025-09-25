@@ -1,5 +1,5 @@
 <?php require_once 'partials/header.php'; ?>
-<title>Inscription - TrouveTonCamp</title>
+<title>Inscription - ColoMap</title>
 
 <main class="container mx-auto px-4 py-16 flex justify-center">
     <div class="w-full max-w-lg">
@@ -11,34 +11,58 @@
             <div class="flex flex-wrap -mx-3 mb-4">
                 <div class="w-full md:w-1/2 px-3 mb-4 md:mb-0">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="prenom">Prénom</label>
-                    <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" id="prenom" type="text" required>
+                    <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700" id="prenom" type="text" required>
                 </div>
                 <div class="w-full md:w-1/2 px-3">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="nom">Nom</label>
-                    <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" id="nom" type="text" required>
+                    <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700" id="nom" type="text" required>
                 </div>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="mail">Email</label>
-                <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" id="mail" type="email" required>
+                <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700" id="mail" type="email" required>
             </div>
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="tel">Téléphone (Optionnel)</label>
-                <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" id="tel" type="tel">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="naissance">Date de naissance</label>
+                <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700" id="naissance" type="date" required>
             </div>
-            <div class="mb-6">
+             <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="sexe">Sexe</label>
+                <select id="sexe" class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700">
+                    <option>Homme</option>
+                    <option>Femme</option>
+                </select>
+            </div>
+            <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Mot de passe</label>
-                <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" id="password" type="password" required>
+                <input class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-700" id="password" type="password" required>
+            </div>
+            
+            <div class="mb-6 border-t pt-6">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Je m'inscris en tant que :</label>
+                <div class="mt-2 flex justify-around">
+                    <label class="flex items-center">
+                        <input type="radio" name="role" value="parent" class="h-4 w-4 text-blue-600" checked>
+                        <span class="ml-2 text-gray-800">Parent</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="role" value="animateur" class="h-4 w-4 text-blue-600">
+                        <span class="ml-2 text-gray-800">Animateur</span>
+                    </label>
+                </div>
+                 <div class="mt-4">
+                     <label class="flex items-center">
+                        <input type="checkbox" id="bafa" class="h-4 w-4 text-blue-600">
+                        <span class="ml-2 text-sm text-gray-800">Je possède le BAFA</span>
+                    </label>
+                </div>
             </div>
             
             <div class="flex items-center justify-between">
-                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none w-full transition duration-300" type="submit">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg w-full" type="submit">
                     S'inscrire
                 </button>
             </div>
-            <p class="text-center text-gray-500 text-sm mt-6">
-                Déjà un compte ? <a class="font-bold text-blue-600 hover:text-blue-800" href="login.php">Connectez-vous</a>
-            </p>
         </form>
     </div>
 </main>
@@ -46,33 +70,35 @@
 <script>
 document.getElementById('register-form').addEventListener('submit', async function(event) {
     event.preventDefault();
-
-    const nom = document.getElementById('nom').value;
-    const prenom = document.getElementById('prenom').value;
-    const mail = document.getElementById('mail').value;
-    const tel = document.getElementById('tel').value;
-    const password = document.getElementById('password').value;
     const messageArea = document.getElementById('message-area');
     messageArea.innerHTML = '<p class="text-blue-500">Création du compte...</p>';
+
+    const formData = {
+        nom: document.getElementById('nom').value,
+        prenom: document.getElementById('prenom').value,
+        mail: document.getElementById('mail').value,
+        naissance: document.getElementById('naissance').value,
+        sexe: document.getElementById('sexe').value,
+        password: document.getElementById('password').value,
+        role: document.querySelector('input[name="role"]:checked').value,
+        bafa: document.getElementById('bafa').checked
+    };
 
     try {
         const response = await fetch('api/user_register.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nom, prenom, mail, tel, password })
+            body: JSON.stringify(formData)
         });
-
         const result = await response.json();
-
         if (response.ok) {
             messageArea.innerHTML = `<p class="text-green-500 font-bold">${result.success}</p>`;
-            // Optionnel: rediriger vers la page de connexion après un court délai
             setTimeout(() => { window.location.href = 'login.php'; }, 2000);
         } else {
             messageArea.innerHTML = `<p class="text-red-500 font-bold">${result.error}</p>`;
         }
     } catch (error) {
-        messageArea.innerHTML = `<p class="text-red-500 font-bold">Une erreur de communication est survenue.</p>`;
+        messageArea.innerHTML = `<p class="text-red-500 font-bold">Une erreur est survenue.</p>`;
     }
 });
 </script>

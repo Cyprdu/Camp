@@ -18,7 +18,7 @@ $placeholder_avatar_url = "https://placehold.co/360x360/e2e8f0/2563eb?text=" . u
              alt="Photo de profil de l'organisateur">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Bienvenue dans votre Espace Organisateur</h1>
-            <p class="text-gray-600">Gérez vos camps, ajoutez-en de nouveaux et communiquez avec les parents.</p>
+            <p class="text-gray-600">Gérez vos camps, ajoutez-en de nouveaux et communiquez avec les parents et animateurs.</p>
         </div>
     </div>
 
@@ -53,8 +53,19 @@ $placeholder_avatar_url = "https://placehold.co/360x360/e2e8f0/2563eb?text=" . u
                 </div>
             </div>
         </a>
+        
+        <a href="demandes-animation.php" class="relative bg-white p-6 rounded-xl shadow-lg border hover:border-yellow-500 hover:ring-2 hover:ring-yellow-200 transition-all cursor-pointer">
+            <div class="flex items-center gap-4">
+                <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M10.5 6A2.25 2.25 0 0 0 8.25 8.25V10.5a2.25 2.25 0 0 0 4.5 0v-2.25A2.25 2.25 0 0 0 10.5 6Zm-3.75 3.75a.75.75 0 0 0-1.5 0v4.5a.75.75 0 0 0 1.5 0v-4.5ZM10.5 12a.75.75 0 0 0-1.5 0v6.75a.75.75 0 0 0 1.5 0v-6.75ZM15 9.75a.75.75 0 0 1 1.5 0v4.5a.75.75 0 0 1-1.5 0v-4.5ZM12.75 12a.75.75 0 0 1 1.5 0v6.75a.75.75 0 0 1-1.5 0v-6.75Z" /><path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3A5.25 5.25 0 0 0 12 1.5ZM9.75 6.75v3a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1-.75-.75v-3a3.75 3.75 0 0 1 7.5 0v3a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1-.75-.75v-3a2.25 2.25 0 0 0-4.5 0Z" clip-rule="evenodd" /></svg>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg">Demandes d'animation</h3>
+                    <p class="text-sm text-gray-500">Gérer les candidatures d'animateurs.</p>
+                </div>
+            </div>
+        </a>
 
-        <!-- NOUVEL ONGLET MESSAGERIE -->
         <a href="messagerie.php" class="relative bg-white p-6 rounded-xl shadow-lg border hover:border-pink-500 hover:ring-2 hover:ring-pink-200 transition-all cursor-pointer">
             <div class="flex items-center gap-4">
                 <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg></div>
