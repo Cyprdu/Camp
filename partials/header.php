@@ -1,11 +1,12 @@
 <?php
+// Fichier: /partials/header.php (mis à jour)
+
 // On démarre la session au tout début de chaque page.
 session_start();
 // On définit les statuts de l'utilisateur pour simplifier le code HTML
 $is_logged_in = isset($_SESSION['user']);
 $is_director = $is_logged_in && ($_SESSION['user']['is_directeur'] ?? false);
 $is_admin = $is_logged_in && ($_SESSION['user']['is_admin'] ?? false);
-// --- AJOUT DE LA VARIABLE POUR ANIMATEUR ---
 $is_animateur = $is_logged_in && ($_SESSION['user']['is_animateur'] ?? false);
 
 // On prépare l'URL de l'avatar par défaut avec la première lettre du prénom.
@@ -42,17 +43,20 @@ $placeholder_url_mobile = "https://placehold.co/48x48/e2e8f0/2563eb?text=" . url
                     <div class="ml-10 flex items-baseline space-x-4">
                         <a href="index.php" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Accueil</a>
 
+                        <?php if ($is_animateur): ?>
+                            <a href="espace-animation.php" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Espace Animation</a>
+                        <?php endif; ?>
+
                         <?php if ($is_director): ?>
                             <a href="organisateurs.php" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Organisateurs</a>
                         <?php endif; ?>
 
-                        <?php if ($is_animateur): ?>
-                            <a href="animateur.php" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Animateur</a>
-                        <?php endif; ?>
-
-                        <?php if ($is_logged_in): ?>
+                        <?php if ($is_logged_in && !$is_animateur): ?>
                             <a href="favorites.php" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Mes Favoris</a>
                             <a href="reservations.php" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Réservations</a>
+                        <?php endif; ?>
+                        
+                        <?php if ($is_logged_in): ?>
                             <a href="messagerie.php" class="relative text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                                 <span>Messagerie</span>
                                 <span id="unread-badge-desktop" class="absolute top-1 right-0 w-4 h-4 flex items-center justify-center bg-red-600 text-white text-xs font-bold rounded-full hidden"></span>
@@ -90,17 +94,21 @@ $placeholder_url_mobile = "https://placehold.co/48x48/e2e8f0/2563eb?text=" . url
                     <a href="profile.php" class="flex items-center p-3 rounded-lg mb-4 bg-gray-100"><img class="h-12 w-12 rounded-full object-cover mr-4" src="<?php echo htmlspecialchars($_SESSION['user']['photo_url'] ?? $placeholder_url_mobile); ?>" alt="Photo de profil"><div><div class="text-base font-bold text-gray-900"><?php echo htmlspecialchars($_SESSION['user']['prenom']) . ' ' . htmlspecialchars($_SESSION['user']['nom']); ?></div><div class="text-sm font-medium text-blue-600">Voir mon profil</div></div></a>
                 <?php endif; ?>
                 <a href="index.php" class="text-gray-700 hover:bg-gray-100 block px-3 py-3 rounded-md text-base font-medium">Accueil</a>
+                
+                <?php if ($is_animateur): ?>
+                    <a href="espace-animation.php" class="text-gray-700 hover:bg-gray-100 block px-3 py-3 rounded-md text-base font-medium">Espace Animation</a>
+                <?php endif; ?>
+
                 <?php if ($is_director): ?>
                     <a href="organisateurs.php" class="text-gray-700 hover:bg-gray-100 block px-3 py-3 rounded-md text-base font-medium">Organisateurs</a>
                 <?php endif; ?>
-
-                <?php if ($is_animateur): ?>
-                    <a href="animateur.php" class="text-gray-700 hover:bg-gray-100 block px-3 py-3 rounded-md text-base font-medium">Animateur</a>
-                <?php endif; ?>
-
-                <?php if ($is_logged_in): ?>
+                
+                <?php if ($is_logged_in && !$is_animateur): ?>
                     <a href="favorites.php" class="text-gray-700 hover:bg-gray-100 block px-3 py-3 rounded-md text-base font-medium">Mes Favoris</a>
                     <a href="reservations.php" class="text-gray-700 hover:bg-gray-100 block px-3 py-3 rounded-md text-base font-medium">Réservations</a>
+                <?php endif; ?>
+                
+                <?php if ($is_logged_in): ?>
                     <a href="messagerie.php" class="relative text-gray-700 hover:bg-gray-100 block px-3 py-3 rounded-md text-base font-medium"><span>Messagerie</span><span id="unread-badge-mobile" class="absolute top-2 left-24 w-4 h-4 flex items-center justify-center bg-red-600 text-white text-xs font-bold rounded-full hidden"></span></a>
                 <?php endif; ?>
                 <a href="aide.php" class="text-gray-700 hover:bg-gray-100 block px-3 py-3 rounded-md text-base font-medium">Aide</a>
@@ -116,7 +124,6 @@ $placeholder_url_mobile = "https://placehold.co/48x48/e2e8f0/2563eb?text=" . url
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // ... (le script du menu mobile reste identique)
         const openMenuButton = document.getElementById('open-menu-button');
         const closeMenuButton = document.getElementById('close-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -126,7 +133,6 @@ $placeholder_url_mobile = "https://placehold.co/48x48/e2e8f0/2563eb?text=" . url
         if(closeMenuButton) { closeMenuButton.addEventListener('click', () => { mobileMenu.classList.add('translate-x-full'); overlay.classList.add('hidden'); body.classList.remove('body-no-scroll'); }); }
         if(overlay) { overlay.addEventListener('click', () => { mobileMenu.classList.add('translate-x-full'); overlay.classList.add('hidden'); body.classList.remove('body-no-scroll'); }); }
 
-        // Script pour les notifications
         <?php if ($is_logged_in): ?>
         async function fetchUnreadCount() {
             try {
