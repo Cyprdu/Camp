@@ -15,7 +15,7 @@ if (empty($camp_id)) {
 $user_prenom = $_SESSION['user']['prenom'] ?? 'N/A';
 $user_nom = $_SESSION['user']['nom'] ?? 'N/A';
 $user_mail = $_SESSION['user']['mail'] ?? 'N/A';
-$user_tel = $_SESSION['user']['tel'] ?? 'Non renseigné'; // CORRECTION : Utilise la variable de session
+$user_tel = $_SESSION['user']['tel'] ?? 'Non renseigné'; // CORRECTION : Utilise la variable de session mise à jour
 ?>
 
 <title>Inscription Animateur - ColoMap</title>
@@ -94,6 +94,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         };
 
         try {
+            // CORRECTION : Appel au bon script API
             const response = await fetch('api/process_animator_application.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
