@@ -191,7 +191,6 @@ document.addEventListener('DOMContentLoaded', function() {
         camps.forEach(camp => {
             const isFavorited = !isAnimator && userFavorites.includes(camp.id);
             const detailPage = isAnimator ? 'info-camp-animateur.php' : 'camp_details.php';
-            
             const priceDisplay = !isAnimator ? `<p class="text-blue-600 font-bold text-lg">${camp.prix}€</p>` : '';
             
             newContent += `
