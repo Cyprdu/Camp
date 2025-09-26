@@ -1,5 +1,5 @@
 <?php
-// Fichier: /api/get_eligible_camps_for_animator.php (Correction finale et robuste)
+// Fichier: /api/get_eligible_camps_for_animator.php (Corrigé et finalisé)
 session_start();
 header('Content-Type: application/json');
 require_once 'config.php';
@@ -20,7 +20,7 @@ try {
     $user = $userRecord['fields'];
     $user['id'] = $userRecord['id'];
 
-    // 2. Récupérer TOUS les camps qui cherchent des animateurs (le filtrage par date se fera en PHP)
+    // 2. Récupérer TOUS les camps qui ont la "Gestion animateur" activée
     $formula = "{Gestion animateur} = 1";
     
     $campsResult = callAirtable('GET', 'Camps', ['filterByFormula' => $formula]);
@@ -36,18 +36,19 @@ try {
     }
 
     $eligibleCamps = [];
-    $today = new DateTime(); // Date actuelle pour la comparaison
-    $today->setTime(0, 0, 0); // On met l'heure à minuit pour inclure les camps du jour même
+    $today = new DateTime();
+    $today->setTime(0, 0, 0); // Important pour comparer les dates correctement
 
     foreach ($allCamps as $campRecord) {
         $camp = $campRecord['fields'];
         $camp['id'] = $campRecord['id'];
 
-        // --- VÉRIFICATION DE DATE EN PHP ---
-        if (empty($camp['Date début du camp'])) continue; // Ignorer si pas de date
+        // --- NOUVELLE VÉRIFICATION DE DATE EN PHP ---
+        // On vérifie si le camp est dans le futur
+        if (empty($camp['Date début du camp'])) continue; 
         $campStartDate = new DateTime($camp['Date début du camp']);
         if ($campStartDate < $today) {
-            continue; // Si le camp est déjà passé, on passe au suivant
+            continue; // Si le camp est déjà passé, on l'ignore et on passe au suivant
         }
         // --- FIN DE LA VÉRIFICATION DE DATE ---
 
@@ -71,7 +72,7 @@ try {
         $totalQuota = $camp['quota max anim'] ?? 999;
         
         if (count($linkedAnimatorsIds) >= $totalQuota) {
-            continue; // Camp complet
+            continue;
         }
 
         $maleAnimCount = 0;

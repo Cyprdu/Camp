@@ -12,16 +12,15 @@ if (!isset($_SESSION['user']['id']) || !$_SESSION['user']['is_directeur']) {
 
 try {
     $directorId = $_SESSION['user']['id'];
+    $tableName = 'Candidatures';
     
-    // CORRECTION : La formule doit utiliser le champ Lookup qui renvoie l'ID du directeur.
-    // Assurez-vous que dans votre table "Candidatures", vous avez un champ Lookup
-    // qui pointe vers le champ "Liaison" (ou similaire) de la table "Organisateur"
-    // via le champ "Camp". Nommez ce champ "ID Directeur (from Camp)" par exemple.
+    // CORRECTION : La formule doit utiliser le champ Lookup correct.
     $formula = "{ID Directeur (from Camp)} = '{$directorId}'";
 
-    $result = callAirtable('GET', 'Candidatures', ['filterByFormula' => $formula]);
+    $result = callAirtable('GET', $tableName, ['filterByFormula' => $formula]);
     if (isset($result['error'])) {
-        throw new Exception("Erreur de récupération des candidatures.");
+        $errorMessage = $result['response']['error']['message'] ?? "Erreur de récupération des candidatures.";
+        throw new Exception($errorMessage);
     }
 
     $applications = [];

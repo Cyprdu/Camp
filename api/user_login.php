@@ -50,7 +50,7 @@ try {
             'nom' => $userRecord['fields']['nom'] ?? '',
             'prenom' => $userRecord['fields']['prenom'] ?? '',
             'mail' => $userRecord['fields']['mail'] ?? '',
-            'tel' => $userRecord['fields']['numero de tel'] ?? '', // CORRECTION : Ajout du téléphone
+            'tel' => $userRecord['fields']['numero de tel'] ?? '', // CORRECTION : Ajout du téléphone à la session
             'photo_url' => $userRecord['fields']['PDP'][0]['url'] ?? null,
             'is_directeur' => $userRecord['fields']['Directeur'] ?? false,
             'demande_en_cours' => $userRecord['fields']['Demande en cours...'] ?? false,
